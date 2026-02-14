@@ -8,7 +8,7 @@ async def main():
     api = LeetifyAPI(steam_id)
     
     # Получаем данные о матчах
-    matches = await api.get_matches(limit=30)  # Увеличил лимит до 30, так как у вас много матчей
+    matches = await api.get_matches(limit=30)  # Увеличил лимит до 30,
     
     if matches is None:
         print("Не удалось получить данные от API")
