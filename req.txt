@@ -1,3 +1,4 @@
-dotenv = 1.2.1
-requests = 2.32.5
-aiohttp = 3.13.3
+dotenv 
+requests == 2.32.5
+aiohttp == 3.13.3
+aiogram

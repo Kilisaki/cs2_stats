@@ -1,30 +1,45 @@
 import asyncio
-from services.api_service.leetify_api import LeetifyAPI, LeetifyAPIDataWorker
-from services.telegram_service.tg_bot import TelegramBot
-from services.configs import config
+import logging
 
-async def main():
-    steam_id = "76561199090532443"
-    # Создаем экземпляр API
-    api = LeetifyAPI(steam_id)
-    
-    # Получаем данные о матчах
-    matches = await api.get_matches(limit=30)  # Увеличил лимит до 30,
-    
-    if matches is None:
-        print("Не удалось получить данные от API")
-        return
-    
-    # Создаем обработчик данных
-    data_worker = LeetifyAPIDataWorker(matches_data=matches)
-    
-    # Получаем и возвращаем статистику
-    #return data_worker.get_matches_stats_summary()
-    return data_worker.get_all_match_ids()
+from aiogram import Bot, Dispatcher, Router
+from aiogram.enums import ParseMode
+
+from core.di_container import Container
+from core.command_processor import CommandProcessor
+from core.configs import config
+
+from core.usecases.get_leetify_summary import GetLeetifySummary
+from services.telegram_service.tg_bot_handlers import TgBotHandlers
+
+
+async def main() -> None:
+    leetify_uc = GetLeetifySummary()
+
+ 
+    logging.basicConfig(level=logging.INFO)
+
+    container = Container()
+
+    container.register_singleton("config", config)
+    container.register_singleton("command_processor", CommandProcessor(leetify_uc))
+
+
+
+    bot_token = config.get("TELEGRAM_BOT_API_KEY")
+    if not bot_token:
+        raise RuntimeError("TELEGRAM_BOT_API_KEY is not set in .env")
+
+    bot = Bot(token=bot_token)
+    router = Router()
+
+    # Поднимаем хендлеры Telegram
+    TgBotHandlers(router, container.resolve("command_processor"))
+
+    dp = Dispatcher()
+    dp.include_router(router)
+
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    # Создаем и запускаем проект
     asyncio.run(main())
-    bot = TelegramBot(config)
-    bot.run()
