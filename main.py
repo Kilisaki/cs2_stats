@@ -1,9 +1,10 @@
-from services.api_service.leetify_api import LeetifyAPI, LeetifyAPIDataWorker
 import asyncio
+from services.api_service.leetify_api import LeetifyAPI, LeetifyAPIDataWorker
+from services.telegram_service.tg_bot import TelegramBot
+from services.configs import config
 
 async def main():
     steam_id = "76561199090532443"
-    
     # Создаем экземпляр API
     api = LeetifyAPI(steam_id)
     
@@ -19,8 +20,11 @@ async def main():
     
     # Получаем и возвращаем статистику
     #return data_worker.get_matches_stats_summary()
-    return data_worker.get_average_stats()
+    return data_worker.get_all_match_ids()
+
 
 if __name__ == "__main__":
-    result = asyncio.run(main())
-    print(result)
+    # Создаем и запускаем проект
+    asyncio.run(main())
+    bot = TelegramBot(config)
+    bot.run()
