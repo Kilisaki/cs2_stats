@@ -10,36 +10,48 @@ from core.configs import config
 
 from core.usecases.get_leetify_summary import GetLeetifySummary
 from services.telegram_service.tg_bot_handlers import TgBotHandlers
+from services.discord_service.ds_bot_handlers import DiscordHandlers
 
+import discord
+from discord.ext import commands
 
 async def main() -> None:
     leetify_uc = GetLeetifySummary()
 
- 
     logging.basicConfig(level=logging.INFO)
 
     container = Container()
-
     container.register_singleton("config", config)
     container.register_singleton("command_processor", CommandProcessor(leetify_uc))
 
-
-
-    bot_token = config.get("TELEGRAM_BOT_API_KEY")
-    if not bot_token:
-        raise RuntimeError("TELEGRAM_BOT_API_KEY is not set in .env")
-
-    bot = Bot(token=bot_token)
+    # Telegram
     router = Router()
-
-    # Поднимаем хендлеры Telegram
     TgBotHandlers(router, container.resolve("command_processor"))
-
     dp = Dispatcher()
     dp.include_router(router)
 
-    await dp.start_polling(bot)
+    telegram_bot = Bot(token=config.get("TELEGRAM_BOT_API_KEY"))
 
+    # Discord
+    intents = discord.Intents.default()
+    intents.message_content = True
+
+    discord_bot = commands.Bot(
+        command_prefix="!",
+        intents=intents
+    )
+
+    container.register_singleton("discord_bot", discord_bot)
+
+    DiscordHandlers(
+        discord_bot,
+        container.resolve("command_processor")
+    )
+
+    await asyncio.gather(
+        dp.start_polling(telegram_bot),
+        discord_bot.start(config.get("DISCORD_BOT_API_KEY"))
+    )
 
 if __name__ == "__main__":
     asyncio.run(main())
