@@ -13,6 +13,7 @@ class GetLeetifySummary:
         worker = LeetifyAPIDataWorker(data)
         summary = worker.get_matches_stats_summary()
         player = worker.get_player_info()
+        s = worker.get_average_stats()
 
         if not summary:
             return "No data available."
@@ -22,4 +23,5 @@ class GetLeetifySummary:
             f"Matches: {summary['total_matches']}\n"
             f"Avg KD: {summary['avg_kd']}\n"
             f"Avg Rating: {summary['avg_rating']}"
+            f"AVG Stats {s}"
         )
