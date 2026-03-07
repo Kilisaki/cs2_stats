@@ -3,9 +3,6 @@ name: Deploy CS2 Stats
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'cs2_stats/**'
-      - 'docker-compose.yml'
 
 jobs:
   deploy:
