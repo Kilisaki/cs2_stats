@@ -3,6 +3,8 @@ name: Deploy CS2 Stats
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**'
 
 jobs:
   deploy:
