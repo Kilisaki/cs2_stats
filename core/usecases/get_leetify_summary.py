@@ -13,7 +13,7 @@ class GetLeetifySummary:
         worker = LeetifyAPIDataWorker(data)
         summary = worker.get_matches_stats_summary()
         player = worker.get_player_info()
-        s = worker.get_average_stats()
+        s = worker.get_top_matches()
 
         if not summary:
             return "No data available."
