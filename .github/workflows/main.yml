@@ -1,0 +1,42 @@
+name: Deploy CS2 Stats
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'projects/cs2_stats/**'
+      - 'docker-compose.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Переходим в корень проекта (где лежит docker-compose.yml)
+            cd /home/ilkhom/docker
+            
+            # Стягиваем последние изменения
+            git pull origin main
+            
+            # СОЗДАЕМ .env ФАЙЛ В НУЖНОЙ ПАПКЕ
+            cat > projects/cs2_stats/.env << 'EOF'
+            LEETIFY_API_KEY=${{ secrets.LEETIFY_API_KEY }}
+            TELEGRAM_BOT_API_KEY=${{ secrets.TELEGRAM_BOT_API_KEY }}
+            DISCORD_BOT_API_KEY=${{ secrets.DISCORD_BOT_API_KEY }}
+            EOF
+            
+            # Пересобираем и перезапускаем бота
+            docker-compose build cs2_stats
+            docker-compose up -d --no-deps cs2_stats
+            
+            # Чистим старые образы
+            docker image prune -f
