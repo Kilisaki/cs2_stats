@@ -33,4 +33,4 @@ class Config:
     
 # Создаем глобальный экземпляр для удобства
 config = Config()
-print(config.get("TELEGRAM_BOT_API_KEY"))
+print("Зависимости загружены")

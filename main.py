@@ -53,5 +53,6 @@ async def main() -> None:
         discord_bot.start(config.get("DISCORD_BOT_API_KEY"))
     )
 
+
 if __name__ == "__main__":
     asyncio.run(main())
