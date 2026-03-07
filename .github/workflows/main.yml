@@ -21,13 +21,16 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 51234
           script: |
-            # Переходим в корень проекта (где лежит docker-compose.yml)
-            cd /home/ilkhom/docker
+            # Переходим в папку с git-репозиторием
+            cd /home/ilkhom/docker/projects/cs2_stats
             
             # Стягиваем последние изменения
             git pull origin main
             
-            # СОЗДАЕМ .env ФАЙЛ В НУЖНОЙ ПАПКЕ
+            # Возвращаемся в корневую папку docker для работы с compose
+            cd /home/ilkhom/docker
+            
+            # СОЗДАЕМ .env ФАЙЛ (перезаписываем если существует)
             cat > projects/cs2_stats/.env << 'EOF'
             LEETIFY_API_KEY=${{ secrets.LEETIFY_API_KEY }}
             TELEGRAM_BOT_API_KEY=${{ secrets.TELEGRAM_BOT_API_KEY }}
@@ -35,8 +38,7 @@ jobs:
             EOF
             
             # Пересобираем и перезапускаем бота
-            docker-compose build cs2_stats
-            docker-compose up -d --no-deps cs2_stats
-            
-            # Чистим старые образы
+            docker compose build cs2_stats
+            docker compose up -d --no-deps cs2_stats
+            #Уборочка          
             docker image prune -f
