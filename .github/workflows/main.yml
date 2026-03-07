@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'projects/cs2_stats/**'
+      - 'cs2_stats/**'
       - 'docker-compose.yml'
 
 jobs:
