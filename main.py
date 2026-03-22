@@ -50,7 +50,7 @@ async def main() -> None:
 
     await asyncio.gather(
         dp.start_polling(telegram_bot),
-        discord_bot.start(config.get("DISCORD_BOT_API_KEY"))
+        #discord_bot.start(config.get("DISCORD_BOT_API_KEY"))
     )
 
 

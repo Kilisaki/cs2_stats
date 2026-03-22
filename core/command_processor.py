@@ -63,14 +63,13 @@ class CommandProcessor:
     async def _allstats(self, args: Tuple[str, ...]) -> str:
         if not args:
             return "Использование: /allstats <steam64_id>"
-
         steam64_id = args[0]
 
         data = await self.leetify_service.execute(steam64_id)
         if not data:
             return "Не удалось получить данные."
 
-       # player = data.get("player", {})
-        #summary = data.get("summary", {})
 
         return data
+    async def _random_music(self, args:Tuple[str, ...]) -> str:
+        pass
